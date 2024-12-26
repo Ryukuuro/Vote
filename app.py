@@ -10,8 +10,11 @@ voted_ips = set()
 def index():
     return render_template("index.html", votes=votes)
 
-@app.route("/vote", methods=["POST"])
+@app.route("/vote", methods=["GET", "POST"])
 def vote():
+    if request.method == "GET":
+        return jsonify({"status": "success", "votes": votes})
+
     # Obtener la IP del usuario
     user_ip = request.remote_addr
     if user_ip in voted_ips:
