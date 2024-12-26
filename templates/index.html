@@ -4,18 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voting App</title>
+    <style>
+        .bar-container {
+            width: 50px;
+            height: 200px;
+            border: 1px solid #000;
+            margin: 10px;
+            display: inline-block;
+            vertical-align: bottom;
+        }
+        .bar {
+            width: 100%;
+            background-color: blue;
+            height: 0;
+        }
+        #bar-option2 .bar {
+            background-color: red;
+        }
+    </style>
 </head>
 <body>
-    <div id="bar-option1" style="height: 0%; width: 50px; background-color: blue;"></div>
-    <div id="bar-option2" style="height: 0%; width: 50px; background-color: red;"></div>
+    <div id="bar-option1" class="bar-container">
+        <div class="bar"></div>
+    </div>
+    <div id="bar-option2" class="bar-container">
+        <div class="bar"></div>
+    </div>
 
     <script>
         function updateBars(votes) {
             const totalVotes = votes.option1 + votes.option2;
             const height1 = totalVotes ? (votes.option1 / totalVotes) * 100 : 0;
             const height2 = totalVotes ? (votes.option2 / totalVotes) * 100 : 0;
-            document.getElementById('bar-option1').style.height = height1 + "%";
-            document.getElementById('bar-option2').style.height = height2 + "%";
+            document.querySelector('#bar-option1 .bar').style.height = height1 + "%";
+            document.querySelector('#bar-option2 .bar').style.height = height2 + "%";
         }
 
         function fetchVotes() {
