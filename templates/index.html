@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votación</title>
+</head>
+<body>
+    <h1>Votación</h1>
+    <p>Votos: Opción 1 - {{ votes["option1"] }}, Opción 2 - {{ votes["option2"] }}</p>
+    <button onclick="sendVote('option1')">Votar por Opción 1</button>
+    <button onclick="sendVote('option2')">Votar por Opción 2</button>
+
+    <script>
+        function sendVote(option) {
+            fetch('/vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ option })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.body.innerHTML = 'Votos: Opción 1 - ' + data.votes.option1 + ', Opción 2 - ' + data.votes.option2;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
