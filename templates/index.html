@@ -4,14 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .progress-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .bar {
+            width: 100px;
+            height: 300px;
+            background-color: lightgray;
+            position: relative;
+        }
+        .fill {
+            width: 100%;
+            background-color: blue;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.3s ease;
+        }
+    </style>
 </head>
 <body>
-    <h1>Votación</h1>
-    <p>Votos: Opción 1 - {{ votes["option1"] }}, Opción 2 - {{ votes["option2"] }}</p>
+    <h1>Votación en tiempo real</h1>
+    <div class="progress-container">
+        <div>
+            <h3>Opción 1</h3>
+            <div class="bar">
+                <div id="bar-option1" class="fill" style="height: 0%;"></div>
+            </div>
+        </div>
+        <div>
+            <h3>Opción 2</h3>
+            <div class="bar">
+                <div id="bar-option2" class="fill" style="height: 0%;"></div>
+            </div>
+        </div>
+    </div>
     <button onclick="sendVote('option1')">Votar por Opción 1</button>
     <button onclick="sendVote('option2')">Votar por Opción 2</button>
 
+    <p id="message"></p>
+
     <script>
+        // Función para enviar votos
         function sendVote(option) {
             fetch('/vote', {
                 method: 'POST',
@@ -21,12 +63,32 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success') {
-                    document.body.innerHTML = 'Votos: Opción 1 - ' + data.votes.option1 + ', Opción 2 - ' + data.votes.option2;
+                    updateBars(data.votes);
+                    document.getElementById('message').innerText = "¡Gracias por tu voto!";
                 } else {
-                    alert('Error: ' + data.message);
+                    document.getElementById('message').innerText = "Error: " + data.message;
                 }
+            })
+            .catch(err => {
+                document.getElementById('message').innerText = "Error al votar. Intenta nuevamente.";
+                console.error(err);
             });
         }
+
+        // Función para actualizar las barras de progreso
+        function updateBars(votes) {
+            const totalVotes = votes.option1 + votes.option2;
+            const height1 = totalVotes > 0 ? (votes.option1 / totalVotes) * 100 : 0;
+            const height2 = totalVotes > 0 ? (votes.option2 / totalVotes) * 100 : 0;
+
+            document.getElementById('bar-option1').style.height = height1 + "%";
+            document.getElementById('bar-option2').style.height = height2 + "%";
+        }
+
+        // Actualización inicial al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBars({ option1: {{ votes["option1"] }}, option2: {{ votes["option2"] }} });
+        });
     </script>
 </body>
 </html>
